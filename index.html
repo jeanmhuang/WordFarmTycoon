@@ -3,35 +3,42 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Word Farm Tycoon</title>
-<meta name="description" content="A simple, colorful word-growing game. Tap, merge, and make words to earn coins!" />
+<title>🌾 Word Farm Tycoon</title>
+<meta name="description" content="Grow your word farm! Tap, merge, and make words to climb the leaderboard!" />
 <style>
   body {
     margin: 0;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(180deg, #f0f8ff, #cce5ff);
-    color: #222;
+    font-family: 'Comic Sans MS', sans-serif;
+    background: linear-gradient(180deg, #fff7e6, #ffe6f0);
+    color: #333;
     text-align: center;
+    overflow-x: hidden;
   }
   h1 {
-    margin-top: 20px;
-    color: #004080;
+    margin: 20px;
+    font-size: 2.2em;
+    color: #ff4da6;
+    animation: bounce 1.5s infinite;
   }
+  @keyframes bounce { 0%, 100% {transform: translateY(0);} 50% {transform: translateY(-6px);} }
   .btn {
-    background-color: #007bff;
+    background-color: #ff85c1;
     color: white;
     border: none;
     border-radius: 8px;
-    padding: 10px 20px;
+    padding: 12px 22px;
     margin: 5px;
-    font-size: 16px;
+    font-size: 17px;
+    font-weight: bold;
     cursor: pointer;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+    transition: transform 0.1s;
   }
-  .btn:hover { background-color: #0056b3; }
+  .btn:hover { transform: scale(1.05); }
   .stats, .instructions {
     background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     width: 80%;
     margin: 10px auto;
     padding: 15px;
@@ -39,56 +46,78 @@
   .farm {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
-    width: 80%;
+    gap: 8px;
+    width: 85%;
     margin: 20px auto;
   }
   .plot {
-    background: #e6f0ff;
-    border: 2px solid #99c2ff;
-    border-radius: 8px;
+    background: #fff0f6;
+    border: 3px solid #ffb3d9;
+    border-radius: 12px;
     height: 70px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
+    font-size: 22px;
     cursor: pointer;
+    transition: 0.2s;
   }
-  .plot.selected { background: #ffd966; border-color: #ffbf00; }
+  .plot:hover { background: #ffe6f2; transform: scale(1.05); }
+  .plot.selected { background: #ffecb3; border-color: #ffcc00; }
   input {
     padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #aaa;
-    width: 60%;
+    border-radius: 10px;
+    border: 2px solid #ffb3d9;
+    width: 65%;
     margin-top: 10px;
+    font-size: 16px;
+  }
+  .share-btn {
+    margin-top: 20px;
+    background: #6c63ff;
+  }
+  #popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    display: none;
   }
 </style>
 </head>
 <body>
-<h1>🧠 Word Farm Tycoon</h1>
+<h1>🌾 Word Farm Tycoon</h1>
 <div class="stats">
-  💰 Coins: <span id="coins">0</span> | ⚙️ CPS: <span id="cps">0</span> | 📚 Words: <span id="words">0</span>
+  💰 Coins: <span id="coins">0</span> | 📚 Words: <span id="words">0</span>
 </div>
 <div class="instructions">
   <h3>How to Play</h3>
-  <p>1️⃣ Tap “Harvest Letter” to plant a random letter in your farm.</p>
-  <p>2️⃣ Click two or more matching letters and press “Merge” to combine them and earn coins.</p>
-  <p>3️⃣ Type real words using your farm letters to earn even more coins! The longer the word, the more coins you get.</p>
-  <p>💡 Rare letters (Q, Z, J, X) give bonus coins!</p>
+  <p>🌱 <strong>Harvest Letters:</strong> Tap the button to plant random letters in your farm!</p>
+  <p>💥 <strong>Merge:</strong> Click two or more matching letters and merge them for bonus coins!</p>
+  <p>✍️ <strong>Make Words:</strong> Use your letters to create real words — the longer the word, the more coins!</p>
+  <p>🔥 <strong>Combo Bonus:</strong> Using rare letters (Q, Z, J, X) gives double rewards!</p>
 </div>
 <div>
   <button class="btn" id="harvest">🌱 Harvest Letter</button>
-  <button class="btn" id="merge">🔤 Merge Selected</button>
+  <button class="btn" id="merge">💥 Merge Selected</button>
   <button class="btn" id="makeWord">✍️ Make Word</button>
 </div>
 <div class="farm" id="farm"></div>
-<input type="text" id="wordInput" placeholder="Type a word here..." />
+<input type="text" id="wordInput" placeholder="Type your word..." />
+<button class="btn share-btn" id="share">📢 Share My Farm</button>
+<div id="popup"></div>
 <script>
 const plots = Array(15).fill(null);
 let selected = [];
 let coins = 0;
+let words = 0;
 function updateStats(){
   document.getElementById('coins').textContent = coins;
+  document.getElementById('words').textContent = words;
 }
 function renderFarm(){
   const farm=document.getElementById('farm');
@@ -106,40 +135,57 @@ function renderFarm(){
   });
 }
 function randomLetter(){
-  const letters='aaaaaaaabbbbcccccddddeeeeeeeeeeeeffffggghhhhiiiiiiiijkllllmmmnnnnnnooooooooppqrrrrssssstttttttuuuuvwwxxyz';
+  const letters='eeeeeeeeeeeeettttttttttaaaaaaaaaooooooooiiiiiiiinnnnnnnssssssrrrrrrhhhhhllllllddddcccuuummwfgypbvkjxqz';
   return letters[Math.floor(Math.random()*letters.length)];
 }
-document.getElementById('harvest').onclick=()=>{
+function popup(msg){
+  const p=document.getElementById('popup');
+  p.textContent=msg;
+  p.style.display='block';
+  setTimeout(()=>{p.style.display='none';},1500);
+}
+// Buttons
+const harvest=document.getElementById('harvest');
+harvest.onclick=()=>{
   const i=plots.findIndex(p=>!p);
-  if(i===-1){ coins++; alert('Farm full! +1 coin'); }
-  else plots[i]=randomLetter();
+  if(i===-1){ coins++; popup('🌾 Farm full! +1 coin'); }
+  else { plots[i]=randomLetter(); popup('🌱 New letter planted!'); }
   updateStats(); renderFarm();
 };
-document.getElementById('merge').onclick=()=>{
+const merge=document.getElementById('merge');
+merge.onclick=()=>{
   const chosen=selected.map(i=>plots[i]).filter(Boolean);
-  if(chosen.length<2){ alert('Select 2 or more same letters to merge!'); return; }
+  if(chosen.length<2){ popup('Select 2+ same letters to merge!'); return; }
   const allSame=chosen.every(l=>l===chosen[0]);
-  if(!allSame){ alert('Letters must match!'); return; }
-  const reward=5*(chosen.length-1);
+  if(!allSame){ popup('Letters must match!'); return; }
+  const reward=10*(chosen.length-1);
   coins+=reward;
   plots[selected[0]]=chosen[0];
   selected.slice(1).forEach(i=>plots[i]=null);
   selected=[];
-  alert(`Merged ${chosen.length} ${chosen[0].toUpperCase()} → +${reward} coins!`);
+  popup(`💥 Merged ${chosen.length} ${chosen[0].toUpperCase()} → +${reward} coins!`);
   updateStats(); renderFarm();
 };
-document.getElementById('makeWord').onclick=()=>{
+const makeWord=document.getElementById('makeWord');
+makeWord.onclick=()=>{
   const word=document.getElementById('wordInput').value.trim().toLowerCase();
-  if(!word){ alert('Type a word first!'); return; }
+  if(!word){ popup('Type a word first!'); return; }
   let have={}; plots.forEach(ch=>{ if(ch) have[ch]=(have[ch]||0)+1; });
   let need={}; for(const c of word){ need[c]=(need[c]||0)+1; }
-  for(const c in need){ if((have[c]||0)<need[c]){ alert('Not enough letters for that word!'); return; } }
-  const score=word.length*word.length;
-  coins+=score;
-  alert(`You made "${word.toUpperCase()}" and earned +${score} coins!`);
+  for(const c in need){ if((have[c]||0)<need[c]){ popup('Not enough letters!'); return; } }
+  const score=word.length*word.length + Math.floor(Math.random()*20);
+  coins+=score; words++;
+  popup(`✨ ${word.toUpperCase()} +${score} coins!`);
   updateStats();
+};
+const share=document.getElementById('share');
+share.onclick=()=>{
+  const msg=`🚜 I have ${coins} coins and ${words} words in Word Farm Tycoon! Try to beat me! 🌾\n${location.href}`;
+  navigator.clipboard.writeText(msg);
+  popup('📢 Share text copied! Paste it on Twitter or TikTok!');
 };
 renderFarm(); updateStats();
 </script>
 </body>
 </html>
+
