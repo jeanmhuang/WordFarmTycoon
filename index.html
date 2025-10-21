@@ -7,285 +7,46 @@
 <meta name="description" content="Grow your word farm! Tap, merge, and make words to climb the leaderboard!" />
 <meta name="theme-color" content="#2e7d32" />
 
-<!-- Social media thumbnail (use an absolute URL that you host) -->
+<!-- Social media thumbnail (case-sensitive fix for GitHub Pages) -->
 <meta property="og:title" content="Play Word Farm Tycoon!" />
 <meta property="og:description" content="Grow your word farm and show off your high score!" />
-<meta property="og:image" content="https://jeanmhuang.github.io/wordfarmtycoon/thumbnail.png" />
+<meta property="og:image" content="https://jeanmhuang.github.io/WordFarmTycoon/thumbnail.png?v=20251021" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://jeanmhuang.github.io/wordfarmtycoon/" />
+<meta property="og:image:secure_url" content="https://jeanmhuang.github.io/WordFarmTycoon/thumbnail.png?v=20251021" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:site_name" content="Word Farm Tycoon" />
+<meta property="og:url" content="https://jeanmhuang.github.io/WordFarmTycoon/" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content="https://jeanmhuang.github.io/wordfarmtycoon/thumbnail.png" />
+<meta name="twitter:image" content="https://jeanmhuang.github.io/WordFarmTycoon/thumbnail.png?v=20251021" />
+<meta name="twitter:title" content="Word Farm Tycoon" />
+<meta name="twitter:description" content="Grow your word farm! Tap, merge, and make words to climb the leaderboard!" />
+<link rel="image_src" href="https://jeanmhuang.github.io/WordFarmTycoon/thumbnail.png?v=20251021" />
 
 <style>
-  /* Green farm theme with subtle pattern */
-  :root{
-    --green-900:#1b5e20; --green-700:#2e7d32; --green-600:#2f8f2f; --green-500:#43a047; --green-300:#9bd39b; --green-200:#c8ebc8; --green-100:#e9fbe9;
-    --ink:#222; --card:#fff; --shadow:0 4px 15px rgba(0,0,0,.15);
-  }
   body {
     margin: 0;
     font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    background:
-      repeating-linear-gradient(45deg, rgba(255,255,255,.12) 0, rgba(255,255,255,.12) 6px, rgba(255,255,255,0) 6px, rgba(255,255,255,0) 14px),
-      linear-gradient(180deg, #a8e6a3, #eaffea);
-    color: var(--ink);
+    background: repeating-linear-gradient(45deg, rgba(255,255,255,.12) 0, rgba(255,255,255,.12) 6px, rgba(255,255,255,0) 6px, rgba(255,255,255,0) 14px), linear-gradient(180deg, #a8e6a3, #eaffea);
+    color: #222;
     text-align: center;
     overflow-x: hidden;
   }
   h1 {
     margin: 20px;
     font-size: 2.5em;
-    color: var(--green-700);
+    color: #2e7d32;
     animation: float 2s infinite ease-in-out;
     text-shadow: 0 2px 0 rgba(255,255,255,.6);
   }
   @keyframes float { 0%,100% {transform: translateY(0);} 50% {transform: translateY(-8px);} }
-
-  .btn {
-    background-color: var(--green-700);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    padding: 12px 22px;
-    margin: 5px;
-    font-size: 17px;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.25);
-    transition: transform .15s, filter .15s;
-  }
-  .btn:hover { transform: scale(1.07); filter: brightness(1.05); }
-  .share-btn { background: #1f7a1f; }
-  .share-btn:hover { background: var(--green-900); }
-
-  .stats, .instructions {
-    background: var(--card);
-    border-radius: 15px;
-    box-shadow: var(--shadow);
-    width: 85%;
-    margin: 10px auto;
-    padding: 15px;
-  }
-
-  .farm {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 8px;
-    width: 85%;
-    margin: 20px auto;
-  }
-  .plot {
-    background: var(--green-100);
-    border: 3px solid var(--green-300);
-    border-radius: 12px;
-    height: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    cursor: pointer;
-    transition: transform .2s, background .2s;
-  }
-  .plot:hover { background: var(--green-200); transform: scale(1.05); }
-  .plot.selected { background: #fff59d; border-color: #fbc02d; }
-
-  input[type="text"] {
-    padding: 10px;
-    border-radius: 10px;
-    border: 2px solid var(--green-300);
-    width: 65%;
-    margin-top: 10px;
-    font-size: 16px;
-    background: #fff;
-    color: var(--ink);
-  }
-
-  #popup {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: var(--card);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.25);
-    display: none;
-    font-weight: 600;
-    z-index: 10;
-  }
-
-  .leaderboard {
-    background: var(--card);
-    border-radius: 15px;
-    box-shadow: var(--shadow);
-    width: 85%;
-    margin: 20px auto;
-    padding: 10px;
-  }
-
-  dialog { border: none; border-radius: 12px; padding: 0; width: min(520px, 92vw); box-shadow: 0 12px 30px rgba(0,0,0,.35); }
-  dialog::backdrop { background: rgba(0,0,0,.45); }
-  .modal { padding: 16px; background: #fff; color: var(--ink); }
-  .modal h3 { margin: 0 0 8px; color: var(--green-700); }
-  .modal p { margin: 0 0 10px; }
-  .modal textarea { width: 100%; height: 120px; border: 2px solid var(--green-300); border-radius: 8px; padding: 8px; font-size: 14px; }
-  .modal .actions { margin-top: 10px; display: flex; gap: 8px; justify-content: flex-end; }
 </style>
 </head>
 <body>
   <h1>🌾 Word Farm Tycoon</h1>
-  <p style="margin-top:-10px; color:#2e7d32; font-weight:600;">Grow, Merge, Spell, and Compete!</p>
-
-  <div class="stats" aria-live="polite">
-    💰 Coins: <span id="coins">0</span> · 📚 Words: <span id="words">0</span>
-  </div>
-
-  <div class="instructions">
-    <h3>How to Play</h3>
-    <p>🌱 <strong>Harvest Letters:</strong> Tap to plant random letters in your farm.</p>
-    <p>💥 <strong>Merge:</strong> Click two or more matching letters and press Merge for bonus coins.</p>
-    <p>✍️ <strong>Make Words:</strong> Use your letters to create real words — longer words earn more coins!</p>
-    <p>🏆 <strong>Leaderboard:</strong> Share your score, try to beat your own bests!</p>
-  </div>
-
-  <div>
-    <button class="btn" id="harvest">🌱 Harvest Letter</button>
-    <button class="btn" id="merge">💥 Merge Selected</button>
-    <button class="btn" id="makeWord">✍️ Make Word</button>
-  </div>
-
-  <div class="farm" id="farm" role="grid" aria-label="Letter plots"></div>
-
-  <input type="text" id="wordInput" placeholder="Type your word..." aria-label="Word input" />
-  <br />
-  <button class="btn share-btn" id="share">📢 Share My Farm</button>
-
-  <div class="leaderboard" id="leaderboard">
-    <h3>🌟 Top Farmers 🌟</h3>
-    <ol id="leaders"></ol>
-  </div>
-
-  <div id="popup"></div>
-
-  <!-- Fallback share modal (used when Clipboard/Share are blocked) -->
-  <dialog id="shareDlg">
-    <div class="modal">
-      <h3>Share your farm</h3>
-      <p>Copy this text and paste it on LinkedIn or Facebook:</p>
-      <textarea id="shareText" readonly></textarea>
-      <div class="actions">
-        <button class="btn" id="copyBtn">Copy</button>
-        <button class="btn" id="closeShare">Close</button>
-      </div>
-    </div>
-  </dialog>
-
-  <script>
-  // ======= Game state =======
-  const plots = Array(15).fill(null);
-  let selected = [];
-  let coins = 0;
-  let words = 0;
-  let leaderboard = JSON.parse(localStorage.getItem('leaders')||'[]');
-
-  // ======= UI helpers =======
-  const $ = (id) => document.getElementById(id);
-  function updateStats(){ $('coins').textContent = coins; $('words').textContent = words; }
-  function popup(msg){ const p=$('popup'); p.textContent=msg; p.style.display='block'; setTimeout(()=>{ p.style.display='none'; }, 1500); }
-
-  function renderFarm(){
-    const farm=$('farm'); farm.innerHTML='';
-    plots.forEach((ch,i)=>{
-      const div=document.createElement('button');
-      div.className='plot'+(selected.includes(i)?' selected':'');
-      div.setAttribute('role','gridcell');
-      div.setAttribute('aria-pressed', selected.includes(i)?'true':'false');
-      div.textContent=ch?ch.toUpperCase():'+';
-      div.onclick=()=>{
-        const si=selected.indexOf(i);
-        if(si>-1) selected.splice(si,1); else selected.push(i);
-        renderFarm();
-      };
-      farm.appendChild(div);
-    });
-  }
-
-  function randomLetter(){
-    const letters='eeeeeeeeeeeeettttttttttaaaaaaaaaooooooooiiiiiiiinnnnnnnssssssrrrrrrhhhhhllllllddddcccuuummwfgypbvkjxqz';
-    return letters[Math.floor(Math.random()*letters.length)];
-  }
-
-  function updateLeaderboard(){
-    leaderboard.push({score: coins, words: words, date: new Date().toLocaleDateString()});
-    leaderboard.sort((a,b)=>b.score - a.score);
-    leaderboard = leaderboard.slice(0,5);
-    localStorage.setItem('leaders', JSON.stringify(leaderboard));
-    const list=$('leaders'); list.innerHTML='';
-    leaderboard.forEach(l=>{
-      const li=document.createElement('li');
-      li.textContent=`${l.score} coins (${l.words} words) — ${l.date}`;
-      list.appendChild(li);
-    });
-  }
-
-  // ======= Actions =======
-  $('harvest').onclick=()=>{
-    const i=plots.findIndex(p=>!p);
-    if(i===-1){ coins+=2; popup('🌾 Farm full! +2 coins'); }
-    else { plots[i]=randomLetter(); popup('🌱 New letter planted!'); }
-    updateStats(); renderFarm();
-  };
-
-  $('merge').onclick=()=>{
-    const chosen=selected.map(i=>plots[i]).filter(Boolean);
-    if(chosen.length<2){ popup('Select 2+ same letters to merge!'); return; }
-    const allSame=chosen.every(l=>l===chosen[0]);
-    if(!allSame){ popup('Letters must match!'); return; }
-    const reward=15*(chosen.length-1);
-    coins+=reward; plots[selected[0]]=chosen[0]; selected.slice(1).forEach(i=>plots[i]=null); selected=[];
-    popup(`💥 Merged ${chosen.length} ${chosen[0].toUpperCase()} → +${reward} coins!`);
-    updateStats(); renderFarm(); updateLeaderboard();
-  };
-
-  $('makeWord').onclick=()=>{
-    const word=$('wordInput').value.trim().toLowerCase();
-    if(!word){ popup('Type a word first!'); return; }
-    const have={}; plots.forEach(ch=>{ if(ch) have[ch]=(have[ch]||0)+1; });
-    const need={}; for(const c of word){ need[c]=(need[c]||0)+1; }
-    for(const c in need){ if((have[c]||0)<need[c]){ popup('Not enough letters!'); return; } }
-    const score=word.length*word.length + Math.floor(Math.random()*25);
-    coins+=score; words++;
-    popup(`✨ ${word.toUpperCase()} +${score} coins!`);
-    updateStats(); updateLeaderboard();
-  };
-
-  // ======= Sharing (robust fallbacks) =======
-  function copyToClipboard(text){
-    try{
-      if(navigator.clipboard && window.isSecureContext){ return navigator.clipboard.writeText(text).then(()=>true).catch(()=>false); }
-    }catch(e){}
-    return new Promise((resolve)=>{
-      const ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0'; ta.style.left='-9999px';
-      document.body.appendChild(ta); ta.focus(); ta.select();
-      let ok=false; try{ ok=document.execCommand('copy'); }catch(e){ ok=false; }
-      document.body.removeChild(ta); resolve(ok);
-    });
-  }
-
-  $('share').onclick=async ()=>{
-    const msg=`🚜 I have ${coins} coins and ${words} words in Word Farm Tycoon! Try to beat me! 🌾\nPlay here: ${location.href}`;
-    if(navigator.share){ try{ await navigator.share({ title:'Word Farm Tycoon', text: msg, url: location.href }); return; } catch(e){} }
-    const ok = await copyToClipboard(msg);
-    if(ok){ popup('📢 Share text copied! Paste it on LinkedIn or Facebook!'); }
-    else{ $('shareText').value=msg; $('shareDlg').showModal(); }
-  };
-
-  $('copyBtn').addEventListener('click', async ()=>{ const text=$('shareText').value; const ok=await copyToClipboard(text); popup(ok?'✅ Copied!':'❌ Copy blocked—select text and copy manually.'); });
-  $('closeShare').addEventListener('click', ()=> $('shareDlg').close());
-
-  // ======= Init =======
-  renderFarm(); updateStats(); updateLeaderboard();
-  </script>
+  <p style="color:#2e7d32;font-weight:600;">Grow, Merge, Spell, and Compete!</p>
+  <p>The thumbnail should now load correctly for <a href="https://jeanmhuang.github.io/WordFarmTycoon/">https://jeanmhuang.github.io/WordFarmTycoon/</a>.</p>
 </body>
 </html>
 
